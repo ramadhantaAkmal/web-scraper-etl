@@ -1,0 +1,62 @@
+version: '3.8'
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "100m"
+    max-file: "5"
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=password
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TIMEZONE=UTC
+    volumes:
+      - n8n_data:/home/node/.n8n
+    restart: unless-stopped
+    networks:
+      - web-scrape
+  
+  minio:
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z-cpuv1
+    container_name: minio-s3
+    environment:
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin 
+    ports:
+      - "9000:9000"
+      - "9001:9001"  # Console
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    restart: unless-stopped
+    logging: *default-logging
+    networks:
+      - web-scrape
+  s3_minio_buckets:
+    image: minio/mc
+    depends_on:
+        - minio
+    entrypoint: >
+        /bin/sh -c "
+        /usr/bin/mc config host add s3_minio http://localhost:9000/ minioadmin minioadmin;
+        exit 0;
+        "
+    networks:
+      - web-scrape
+
+networks:
+  web-scrape:
+    name: web-scrape
+
+volumes:
+  n8n_data:
+  minio_data:
