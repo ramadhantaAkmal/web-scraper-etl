@@ -7,6 +7,7 @@ load_dotenv()
 api_key = os.getenv('SERPAPI_KEY') 
 client = serpapi.Client(api_key=api_key)
 
+#Ingest data
 def scrape_jobs(token) -> dict:
     if token == "":
         results = client.search({

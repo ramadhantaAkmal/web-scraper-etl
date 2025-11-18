@@ -7,6 +7,7 @@ def main():
     i=0
     next_page_token=""
     df=pd.DataFrame()
+    #Limit the ingest data loop to only 3 times
     while i < 3:
         data = scrape_jobs(next_page_token)
         next_page_token=data["serpapi_pagination"]["next_page_token"]

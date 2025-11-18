@@ -26,7 +26,7 @@ def upload_file_to_minio():
             minio_endpoint,
             access_key=access_key,
             secret_key=secret_key,
-            secure=False  # Use secure=False if your MinIO instance is not using SSL/TLS
+            secure=False 
         )
 
         # Make the bucket if it doesn't exist.
