@@ -7,7 +7,7 @@ def main():
     i=0
     next_page_token=""
     df=pd.DataFrame()
-    while i <= 3:
+    while i < 3:
         data = scrape_jobs(next_page_token)
         next_page_token=data["serpapi_pagination"]["next_page_token"]
         clean_data = clean_result_data(data)
